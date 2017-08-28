@@ -1,0 +1,11 @@
+---
+version: '2'
+services:
+  loader:
+    build: .
+    env_file:
+      - .env
+    links:
+      - postgres
+  postgres:
+    image: postgres
