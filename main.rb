@@ -22,7 +22,7 @@ class Like < ActiveRecord::Base
   upsert_keys [:track_name, :artist_name]
 end
 
-scheduler.every "1d" do
+scheduler.every "5m" do
   data = Pandata::Scraper.get(ENV["PANDORA_EMAIL"])
   likes = data.likes(:tracks)
 
