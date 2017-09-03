@@ -12,5 +12,5 @@ gem "pandata"
 # Use pg as our database adapter
 gem "pg"
 
-# use rufus-scheduler to time when data gets loaded
-gem "rufus-scheduler"
+# Use rest-client to make HTTP calls easier
+gem "rest-client"
