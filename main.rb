@@ -38,26 +38,30 @@ data = Pandata::Scraper.get(ENV["PANDORA_EMAIL"])
 likes = data.likes(:tracks)
 
 likes.each do |like|
-  results = JSON.parse(spotify["search"].get({
-    params: {
-      q: "#{like[:track]} #{like[:artist]}",
-      type: "track"
-    }
-  }.merge(spotify_headers)).body)["tracks"]["items"]
+  begin
+    results = JSON.parse(spotify["search"].get({
+      params: {
+        q: "#{like[:track]} #{like[:artist]}",
+        type: "track"
+      }
+    }.merge(spotify_headers)).body)["tracks"]["items"]
 
-  if record = results.first
-    spotify_track_id = record["id"]
+    if record = results.first
+      spotify_track_id = record["id"]
 
-    spotify_track = JSON.parse(spotify["tracks/#{spotify_track_id}"].get(spotify_headers).body)
-    spotify_track_audio_features = JSON.parse(spotify["audio-features/#{spotify_track_id}"].get(spotify_headers).body)
-    spotify_track_audio_analysis = JSON.parse(spotify["audio-analysis/#{spotify_track_id}"].get(spotify_headers).body)
+      spotify_track = JSON.parse(spotify["tracks/#{spotify_track_id}"].get(spotify_headers).body)
+      spotify_track_audio_features = JSON.parse(spotify["audio-features/#{spotify_track_id}"].get(spotify_headers).body)
+      spotify_track_audio_analysis = JSON.parse(spotify["audio-analysis/#{spotify_track_id}"].get(spotify_headers).body)
 
-    Like.upsert(
-      artist_name: like[:artist],
-      track_name: like[:track],
-      track_information: spotify_track,
-      track_audio_features: spotify_track_audio_features,
-      track_audio_analysis: spotify_track_audio_analysis
-    )
+      Like.upsert(
+        artist_name: like[:artist],
+        track_name: like[:track],
+        track_information: spotify_track,
+        track_audio_features: spotify_track_audio_features,
+        track_audio_analysis: spotify_track_audio_analysis
+      )
+    end
+  rescue => e
+    puts "An error of type #{e.class} happened, message is #{e.message}"
   end
 end
