@@ -38,6 +38,10 @@ data = Pandata::Scraper.get(ENV["PANDORA_EMAIL"])
 likes = data.likes(:tracks)
 
 likes.each do |like|
+  track = Like.where(artist_name: like[:artist], track_name: like[:track]).first
+
+  next if track && track.track_information && track.track_audio_features && track.track_audio_analysis
+
   begin
     results = JSON.parse(spotify["search"].get({
       params: {
